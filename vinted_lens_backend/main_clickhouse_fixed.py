@@ -75,10 +75,6 @@ async def startup_event():
         stats = vector_db.get_stats()
         print(f"✅ ClickHouse connecté - {stats['total_products']} produits")
         
-        # Ajouter des produits si base vide
-        if stats['total_products'] == 0:
-            print("📦 Ajout de produits d'exemple...")
-            vector_db.add_sample_products()
             
     except Exception as e:
         print(f"⚠️ ClickHouse indisponible: {e}")

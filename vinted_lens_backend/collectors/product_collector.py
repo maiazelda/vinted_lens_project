@@ -5,6 +5,9 @@ import io
 import time
 from datetime import datetime, timedelta
 import numpy as np
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 
 # Imports locaux avec chemin corrigé
 try:
@@ -128,25 +131,30 @@ class ProductEmbeddingCollector:
         return f"https://via.placeholder.com/400x500/{color_hex}/ffffff?text={brand}+{category}"
     
     def _get_product_embedding(self, image_url):
-        """Génère embedding à partir d'URL image"""
         try:
-            # Pour la simulation, on génère des embeddings cohérents
-            # basés sur l'URL pour avoir des résultats reproductibles
-            seed = hash(image_url) % 2147483647
-            np.random.seed(seed)
-            embedding = np.random.rand(512).astype(np.float32)
-            
-            # Normaliser l'embedding
-            embedding = embedding / np.linalg.norm(embedding)
-            
-            # Simuler le temps de traitement CLIP
+            import numpy as np
+            import hashlib
+            import time
+
+        # Fabriquer un entier 32 bits non signé à partir de l'URL
+            seed_bytes = hashlib.sha256(image_url.encode("utf-8")).digest()
+        # On prend les 4 premiers octets → valeur entre 0 et 2**32-1
+            seed = int.from_bytes(seed_bytes[:4], "little", signed=False)
+
+        # Utiliser l'API moderne de NumPy
+            rng = np.random.default_rng(seed)
+            embedding = rng.random(512, dtype=np.float32)
+
+        # Normalisation L2
+            embedding /= np.linalg.norm(embedding)
+
+        # Simuler un petit temps de traitement
             time.sleep(0.05)
-            
             return embedding
-            
+
         except Exception as e:
             print(f"Erreur embedding: {e}")
-            return None
+        return None
     
     def collect_all_categories(self, products_per_category=50):
         """Collecte complète pour toutes les catégories"""

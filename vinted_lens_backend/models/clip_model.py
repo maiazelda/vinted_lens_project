@@ -175,6 +175,14 @@ def get_clip_service() -> VintedLensCLIP:
         _clip_service = VintedLensCLIP()
     return _clip_service
 
+class CLIPService(VintedLensCLIP):
+    def encode_image_pil(self, img):
+        emb = self.encode_image(img)
+        if emb is None:
+            raise RuntimeError("CLIPService: échec encode_image")
+        # retourne une list[float] pour ClickHouse (Float32)
+        return [float(x) for x in emb]
+
 # Test du service
 if __name__ == "__main__":
     # Test rapide du service

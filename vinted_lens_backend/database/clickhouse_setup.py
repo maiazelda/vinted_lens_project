@@ -199,84 +199,7 @@ class ClickHouseVectorDB:
         except Exception as e:
             print(f"❌ Erreur recherche: {e}")
             return []
-    
-    def add_sample_products(self):
-        """Ajoute des produits d'exemple"""
-        print("📦 Ajout de produits d'exemple...")
         
-        sample_products = [
-            {
-                "title": "T-shirt vintage Nike rouge",
-                "price": 15.50,
-                "platform": "vinted",
-                "image_url": "https://example.com/tshirt1.jpg",
-                "category": "tops",
-                "color": "red",
-                "brand": "Nike",
-                "size": "M",
-                "condition": "good"
-            },
-            {
-                "title": "Jean skinny Levi's bleu délavé",
-                "price": 35.00,
-                "platform": "vinted",
-                "image_url": "https://example.com/jean1.jpg",
-                "category": "bottoms",
-                "color": "blue",
-                "brand": "Levi's",
-                "size": "32/34",
-                "condition": "very_good"
-            },
-            {
-                "title": "Robe d'été Zara fleurie",
-                "price": 25.99,
-                "platform": "amazon",
-                "image_url": "https://example.com/dress1.jpg",
-                "category": "dresses",
-                "color": "multicolor",
-                "brand": "Zara",
-                "size": "S",
-                "condition": "new"
-            },
-            {
-                "title": "Sneakers Air Force 1 blanches",
-                "price": 89.99,
-                "platform": "zalando",
-                "image_url": "https://example.com/shoes1.jpg",
-                "category": "shoes",
-                "color": "white",
-                "brand": "Nike",
-                "size": "42",
-                "condition": "new"
-            },
-            {
-                "title": "Pull H&M gris chiné",
-                "price": 12.00,
-                "platform": "vinted",
-                "image_url": "https://example.com/pull1.jpg",
-                "category": "tops",
-                "color": "gray",
-                "brand": "H&M",
-                "size": "L",
-                "condition": "good"
-            }
-        ]
-        
-        added_count = 0
-        for product in sample_products:
-            # Générer embedding cohérent
-            np.random.seed(hash(product["title"]) % 2147483647)
-            embedding = np.random.rand(512).astype(np.float32)
-            product['embedding'] = embedding
-            
-            product_id = self.add_product(product)
-            if product_id:
-                added_count += 1
-                print(f"  ✅ {product['title']} (ID: {product_id})")
-            
-        print(f"📦 {added_count} produits ajoutés dans ClickHouse")
-        return added_count
-    
     def get_stats(self):
         """Statistiques de la base"""
         try:
@@ -315,7 +238,6 @@ if __name__ == "__main__":
         print("✅ Base initialisée")
         
         # Ajouter des produits d'exemple
-        db.add_sample_products()
         
         # Afficher stats
         stats = db.get_stats()

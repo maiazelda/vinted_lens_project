@@ -340,7 +340,9 @@ class _VisualSearchScreenState extends State<VisualSearchScreen> {
       
       if (response.statusCode == 200) {
         final responseBody = await response.stream.bytesToString();
-        print("Corps de la réponse: ${responseBody.substring(0, 200)}...");
+        final int maxPreview = 200;
+        final int end = responseBody.length < maxPreview ? responseBody.length : maxPreview;
+        final String preview = responseBody.isEmpty ? "" : responseBody.substring(0, end);print("Corps de la réponse: $preview...");
         
         final jsonData = json.decode(responseBody);
         
