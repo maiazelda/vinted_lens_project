@@ -86,3 +86,64 @@ class VintedClient:
                      referer=f"{self.base}/catalog?search_text={query}")
         r.raise_for_status()
         return r.json()
+    
+    def faceted_categories(self, catalog_ids: str, search_text: str = "") -> dict:
+        """
+        Appelle /api/v2/faceted_categories pour récupérer les sous-catégories
+        d'un ou plusieurs catalog_ids (CSV). Ex: "10" ou "10,11".
+        """
+        params = {
+            "catalog_ids": catalog_ids,
+            "filter_search_text": search_text,
+            "brand_ids": "",
+            "size_ids": "",
+            "status_ids": "",
+            "color_ids": "",
+            "material_ids": "",
+        }
+
+        print(f"[VINTED] GET {self.base}/api/v2/faceted_categories params={params}")
+        try:
+            r = self.get("/api/v2/faceted_categories", params=params,
+                         referer=f"{self.base}/catalog?catalog_ids={catalog_ids}")
+            print(f"[VINTED] -> {r.status_code} {len(r.content)} bytes")
+            r.raise_for_status()
+            try:
+                js = r.json()
+                if not isinstance(js, dict):
+                    print("[VINTED] WARN: JSON n'est pas un dict, type=", type(js))
+                    return {}
+                return js
+            except Exception as je:
+                print("[VINTED] JSON parse error:", je)
+                print(r.text[:800])
+                return {}
+        except Exception as e:
+            print("[VINTED] REQUEST ERROR:", repr(e))
+            return {}
+
+    def search_by_params(self, params: dict, referer_query: str = "") -> dict:
+        p = dict(params or {})
+        p.setdefault("order", "newest_first")
+        p.setdefault("page", 1)
+        p.setdefault("per_page", 20)
+        p.setdefault("screen_name", "catalog")
+        print(f"[VINTED] GET {self.base}/api/v2/catalog/items params={p}")
+        try:
+            r = self.get("/api/v2/catalog/items", params=p,
+                         referer=f"{self.base}/catalog{referer_query}")
+            print(f"[VINTED] -> {r.status_code} {len(r.content)} bytes")
+            r.raise_for_status()
+            try:
+                js = r.json()
+                if not isinstance(js, dict):
+                    print("[VINTED] WARN: JSON n'est pas un dict, type=", type(js))
+                    return {"items": []}
+                return js
+            except Exception as je:
+                print("[VINTED] JSON parse error:", je)
+                print(r.text[:800])
+                return {"items": []}
+        except Exception as e:
+            print("[VINTED] REQUEST ERROR:", repr(e))
+            return {"items": []}

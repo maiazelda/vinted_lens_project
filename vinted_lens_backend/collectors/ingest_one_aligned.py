@@ -117,7 +117,7 @@ def main():
     db     = ch()
 
     # 1) on prend 1 page (robe), on gardera le 1er item pour test
-    data = client.search_items(query="robe", page=1, per_page=10)
+    data = client.search_by_params(params, referer_query=f"?catalog_ids={CATALOG_ID}") or {}
     items = data.get("items") or data.get("catalog_items") or []
     assert items, "Aucun item"
     it = items[0]
